@@ -1,0 +1,14 @@
+# misp-client configuration.
+#
+# The 'options' dict on an instance are keyword args passed directly to PyMISP.
+
+instances:
+  exampleorg:
+    url: https://workgroup.example.org/
+    api_key: API_KEY_HERE
+  analysis-lab:
+    url: https://m.example.net/
+    api_key: API_KEY_HERE
+    options:
+      ssl: false
+      #debug: true
