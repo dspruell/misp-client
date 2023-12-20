@@ -21,9 +21,9 @@ def init_misp(config, instance):
     logger.debug("connecting to instance [%s]...", instance)
     try:
         misp = PyMISP(
-            config.instances[instance]["url"],
-            config.instances[instance]["api_key"],
-            **config.instances[instance].get("options", {}),
+            config["instances"][instance]["url"],
+            config["instances"][instance]["api_key"],
+            **config["instances"][instance].get("options", {}),
         )
     except KeyError:
         raise MISPClientConfigError(

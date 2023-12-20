@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def search_events(config, args):
     "Search specified MISP instances for specified terms"
     instances = (
-        config.instances if args.instance == ALL_INSTANCES else [args.instance]
+        config["instances"] if args.instance == ALL_INSTANCES else [args.instance]
     )
 
     res_data = []
