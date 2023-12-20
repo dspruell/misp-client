@@ -13,7 +13,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="misp-client",
-    version="0.3.3",
+    version="0.4.0",
     description="Client interface for interacting with MISP instances",
     long_description=long_description,
     url="https://github.com/dspruell/misp-client",
@@ -36,8 +36,8 @@ setup(
     zip_safe=False,
     install_requires=[
         "pymisp",
+        "PyYAML",
         "tabulate",
-        "yamlcfg",
     ],
     entry_points={
         "console_scripts": [

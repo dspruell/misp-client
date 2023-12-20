@@ -3,10 +3,15 @@
 import argparse
 import json
 import logging
+from pathlib import Path
 
 from tabulate import tabulate
-from yamlcfg import YamlConfig
 from pymisp.exceptions import PyMISPError
+from yaml import load as yaml_load
+try:
+    from yaml import CSafeLoader as SafeLoader
+except ImportError:
+    from yaml import SafeLoader
 
 from .const import ALL_INSTANCES
 from .misp import init_misp, MISPClientConfigError
@@ -111,15 +116,15 @@ def main():
         logging.getLogger().setLevel(logging.WARNING)
         logging.getLogger(__name__).setLevel(args.log_level.upper())
 
-    # Suppress warnings from unsafe PyYAML loader usage in yamlcfg and SSL
-    # cert validation errors in any instances.
+    # Suppress warnings from SSL cert validation errors in any instances
     if not (args.show_warnings or args.debug):
-        import urllib3, yaml
+        import urllib3
 
         urllib3.disable_warnings()
-        yaml.warnings({"YAMLLoadWarning": False})
 
-    config = YamlConfig(path=args.config)
+    with open(Path(args.config).expanduser(), "rb") as f:
+        config = yaml_load(f, Loader=SafeLoader)
+    logger.debug("configuration object: %s", config)
 
     try:
         args.func(config, args)
