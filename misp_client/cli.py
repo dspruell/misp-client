@@ -14,7 +14,9 @@ except ImportError:
     from yaml import SafeLoader
 
 from .const import ALL_INSTANCES
-from .misp import init_misp, MISPClientConfigError
+from .misp import (
+    init_misp, MISPClientConfigError, MISPClientNoSuchInstanceError
+)
 from .wrappers import *
 
 
@@ -22,7 +24,7 @@ DEFAULTS = {"config_path": "~/.misp.yml", "instance": ALL_INSTANCES}
 
 LOG_LEVELS = ("critical", "error", "warning", "info", "debug")
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.WARNING,
     format="%(asctime)s [%(levelname)s] %(module)s:%(funcName)s - %(message)s",
 )
 
@@ -44,6 +46,12 @@ def main():
         choices=LOG_LEVELS,
         default="warning",
         help="set logging level (default: %(default)s)",
+    )
+    parser.add_argument(
+        "-n",
+        "--no-abort",
+        action="store_true",
+        help="do not abort when an instance encounters a failure",
     )
     parser.add_argument(
         "-w",
@@ -113,8 +121,7 @@ def main():
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
     else:
-        logging.getLogger().setLevel(logging.WARNING)
-        logging.getLogger(__name__).setLevel(args.log_level.upper())
+        logging.getLogger().setLevel(args.log_level.upper())
 
     # Suppress warnings from SSL cert validation errors in any instances
     if not (args.show_warnings or args.debug):
@@ -129,4 +136,9 @@ def main():
     try:
         args.func(config, args)
     except MISPClientConfigError as e:
+        if args.no_abort:
+            logger.warning(e)
+        else:
+            parser.error(e)
+    except MISPClientNoSuchInstanceError as e:
         parser.error(e)
