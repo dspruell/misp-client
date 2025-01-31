@@ -89,4 +89,4 @@ def get_event(config, args):
         print(json.dumps(event))
 
     # XXX Now process event
-    raise NotImplementedError("Plaintext dump is unimplemented, try JSON!")
+    raise NotImplementedError("Plaintext dump is not implemented. Use JSON.")

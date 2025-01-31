@@ -2,8 +2,7 @@
 
 import logging
 
-# Year 2020 deprecation
-from pymisp import ExpandedPyMISP as PyMISP
+from pymisp import PyMISP
 from pymisp.exceptions import PyMISPError
 
 
@@ -14,8 +13,18 @@ class MISPClientConfigError(Exception):
     pass
 
 
+class MISPClientNoSuchInstanceError(Exception):
+    pass
+
+
 def init_misp(config, instance):
     "Return initialized PyMISP client"
+
+    # Handle invalid instance name
+    if not instance in config["instances"].keys():
+        raise MISPClientNoSuchInstanceError(
+            f"instance name {instance} does not exist in the configuration"
+        )
 
     # Initialize client with instance
     logger.debug("connecting to instance [%s]...", instance)
@@ -36,7 +45,7 @@ def init_misp(config, instance):
         )
     else:
         misp_ver = misp.misp_instance_version["version"]
-        logger.debug(
+        logger.info(
             "initialized client [%s] - server: MISP %s", instance, misp_ver
         )
 
